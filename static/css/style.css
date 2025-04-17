@@ -1,0 +1,85 @@
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bs-dark), var(--bs-gray-900));
+    transition: background 0.5s ease;
+}
+
+.card {
+    background-color: rgba(33, 37, 41, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.weather-detail-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.weather-detail-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.weather-icon {
+    font-size: 4rem;
+    display: inline-block;
+}
+
+.btn-check:checked + .btn-outline-secondary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+#weatherContainer.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.theme-clear {
+    background: linear-gradient(135deg, #4b6cb7, #182848);
+}
+
+.theme-clouds {
+    background: linear-gradient(135deg, #757F9A, #D7DDE8);
+}
+
+.theme-rain {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+}
+
+.theme-thunderstorm {
+    background: linear-gradient(135deg, #283E51, #4B79A1);
+}
+
+.theme-snow {
+    background: linear-gradient(135deg, #E6DADA, #274046);
+}
+
+.theme-mist {
+    background: linear-gradient(135deg, #606c88, #3f4c6b);
+}
+
+@media (max-width: 768px) {
+    #temperature {
+        font-size: 2.5rem;
+    }
+    
+    .weather-icon {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-header h1 {
+        font-size: 1.5rem;
+    }
+}

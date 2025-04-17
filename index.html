@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Погодное приложение</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="./static/css/style.css">
+</head>
+<body>
+    <div class="container-fluid py-3">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-header bg-transparent">
+                        <h1 class="text-center mb-3">Прогноз погоды</h1>
+                        <form id="weatherForm" class="d-flex gap-2">
+                            <input type="text" id="cityInput" class="form-control" placeholder="Введите название города..." required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i> Поиск
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div id="loadingIndicator" class="card-body text-center py-5 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
+                        </div>
+                        <p class="mt-3">Получение данных о погоде...</p>
+                    </div>
+                    
+                    <div id="errorContainer" class="card-body text-center py-5 d-none">
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="errorMessage">Ошибка при получении данных о погоде</span>
+                        </div>
+                        <div class="mt-3">
+                            <button id="retryButton" class="btn btn-primary">
+                                <i class="fas fa-sync-alt me-1"></i> Повторить
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="initialState" class="card-body text-center py-5">
+                        <i class="fas fa-cloud-sun fa-4x mb-3 text-secondary"></i>
+                        <p class="lead">Введите название города, чтобы увидеть текущие погодные условия</p>
+                        <div class="row mt-4 justify-content-center">
+                            <div class="col-md-8">
+                                <div class="card bg-dark">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-3">Популярные города Беларуси</h5>
+                                        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                            <button type="button" class="btn btn-outline-primary demo-city" data-city="Минск">Минск</button>
+                                            <button type="button" class="btn btn-outline-primary demo-city" data-city="Гомель">Гомель</button>
+                                            <button type="button" class="btn btn-outline-primary demo-city" data-city="Брест">Брест</button>
+                                            <button type="button" class="btn btn-outline-primary demo-city" data-city="Витебск">Витебск</button>
+                                            <button type="button" class="btn btn-outline-primary demo-city" data-city="Могилев">Могилев</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Weather data -->
+                    <div id="weatherContainer" class="d-none">
+                        <div class="card-body weather-info">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 text-center text-md-start">
+                                    <h2 id="cityName" class="mb-1">Название города</h2>
+                                    <p id="dateTime" class="text-muted">Дата и время</p>
+                                    <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+                                        <div id="weatherIcon" class="weather-icon me-3">
+                                            <!-- Weather icon will be inserted here -->
+                                        </div>
+                                        <div>
+                                            <h1 id="temperature" class="display-4 mb-0">--°</h1>
+                                            <span id="weatherDescription" class="fs-5 text-muted">Описание</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="btn-group" role="group" aria-label="Temperature unit toggle">
+                                            <input type="radio" class="btn-check" name="tempUnit" id="metricUnit" autocomplete="off" checked>
+                                            <label class="btn btn-outline-secondary" for="metricUnit">°C</label>
+                                            
+                                            <input type="radio" class="btn-check" name="tempUnit" id="imperialUnit" autocomplete="off">
+                                            <label class="btn btn-outline-secondary" for="imperialUnit">°F</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mt-4 mt-md-0">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="weather-detail-card p-3 rounded">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-temperature-low text-primary me-2"></i>
+                                                    <span>Ощущается как</span>
+                                                </div>
+                                                <div class="mt-2 fs-5" id="feelsLike">--°</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="weather-detail-card p-3 rounded">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-water text-primary me-2"></i>
+                                                    <span>Влажность</span>
+                                                </div>
+                                                <div class="mt-2 fs-5" id="humidity">--%</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="weather-detail-card p-3 rounded">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-wind text-primary me-2"></i>
+                                                    <span>Скорость ветра</span>
+                                                </div>
+                                                <div class="mt-2 fs-5" id="windSpeed">-- м/с</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="weather-detail-card p-3 rounded">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-compress-alt text-primary me-2"></i>
+                                                    <span>Давление</span>
+                                                </div>
+                                                <div class="mt-2 fs-5" id="pressure">-- гПа</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="row g-2">
+                                <div class="col-6 col-md-3">
+                                    <div class="weather-detail-card p-2 rounded text-center">
+                                        <i class="fas fa-sun text-warning mb-1"></i>
+                                        <p class="mb-0 small">Восход</p>
+                                        <strong id="sunrise">--:--</strong>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="weather-detail-card p-2 rounded text-center">
+                                        <i class="fas fa-moon text-info mb-1"></i>
+                                        <p class="mb-0 small">Закат</p>
+                                        <strong id="sunset">--:--</strong>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="weather-detail-card p-2 rounded text-center">
+                                        <i class="fas fa-eye text-primary mb-1"></i>
+                                        <p class="mb-0 small">Видимость</p>
+                                        <strong id="visibility">-- км</strong>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="weather-detail-card p-2 rounded text-center">
+                                        <i class="fas fa-cloud text-secondary mb-1"></i>
+                                        <p class="mb-0 small">Облачность</p>
+                                        <strong id="cloudiness">--%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center text-muted small">
+                    <p>Данные предоставлены <a href="https://openweathermap.org/" target="_blank" class="text-decoration-none">OpenWeather API</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Weather JS -->
+    <script src="./static/js/weather.js"></script>
+</body>
+</html>
